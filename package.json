@@ -21,5 +21,11 @@
   "bugs": {
     "url": "https://github.com/uehaj/bf-compiler-webassembly/issues"
   },
-  "homepage": "https://github.com/uehaj/bf-compiler-webassembly#readme"
+  "homepage": "https://github.com/uehaj/bf-compiler-webassembly#readme",
+  "dependencies": {
+    "commander": "^2.12.2",
+    "pegjs": "^0.10.0",
+    "readline-sync": "^1.4.7",
+    "wast2wasm": "^0.0.1"
+  }
 }
