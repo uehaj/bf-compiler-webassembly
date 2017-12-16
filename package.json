@@ -1,0 +1,25 @@
+{
+  "name": "bf-compiler-webassembly",
+  "version": "1.0.0",
+  "description": "Brainf*ck compiler for WebAssembly",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uehaj/bf-compiler-webassembly.git"
+  },
+  "keywords": [
+    "webassembly",
+    "node",
+    "brainfuck",
+    "brainf*ck"
+  ],
+  "author": "UEHARA, Junji <uehaj@jggug.org> (https://github.com/uehaj)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/uehaj/bf-compiler-webassembly/issues"
+  },
+  "homepage": "https://github.com/uehaj/bf-compiler-webassembly#readme"
+}
