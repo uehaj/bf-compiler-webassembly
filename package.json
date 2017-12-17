@@ -1,8 +1,7 @@
 {
   "name": "bf-compiler-webassembly",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Brainf*ck compiler for WebAssembly",
-  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
