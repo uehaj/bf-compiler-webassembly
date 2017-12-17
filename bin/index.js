@@ -24,12 +24,6 @@ otherchar = [^><+-.,\\[\\]] {
 
 const parser = peg.generate(syntax);
 
-const source = `
->>,+[-[-<+<+>>]++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-+<[->->+<[>-]>[>]<[-<<[->+<]++++++++++++++++++++++++++[->>+<[>-]>[>]<[-<<<+++++
-+++++++++++++++++++++++++++>[-]>>]<-<]>>]<<]<.[-]>>,+]
-`;
-
 function genInst(inst, depth) {
   return '  '.repeat(depth * 2) + inst + '\n';
 }
@@ -41,7 +35,7 @@ function genCode(code, depth) {
       result += genInst(`    (block ;; [`, depth);
       result += genInst(`      (loop`, depth);
       result += genInst(
-        `        (br_if 1 (i32.eqz (i32.load8_u (get_local $ptr))))`,
+        `        (br_if 1 (i32.eqz (i32.load8_s (get_local $ptr))))`,
         depth
       );
       result += genCode(i, depth + 1);
@@ -60,22 +54,22 @@ function genCode(code, depth) {
       );
     } else if (i === '+') {
       result += genInst(
-        '    (i32.store8 (get_local $ptr) (i32.add (i32.load8_u (get_local $ptr)) (i32.const 1))) ;; +',
+        '    (i32.store8 (get_local $ptr) (i32.add (i32.load8_s (get_local $ptr)) (i32.const 1))) ;; +',
         depth
       );
     } else if (i === '-') {
       result += genInst(
-        '    (i32.store8 (get_local $ptr) (i32.add (i32.load8_u (get_local $ptr)) (i32.const -1))) ;; -',
+        '    (i32.store8 (get_local $ptr) (i32.add (i32.load8_s (get_local $ptr)) (i32.const -1))) ;; -',
         depth
       );
     } else if (i === '.') {
       result += genInst(
-        '    (i32.load (get_local $ptr)) (call $putchar) ;; .',
+        '    (i32.load8_s (get_local $ptr)) (call $putchar) ;; .',
         depth
       );
     } else if (i === ',') {
       result += genInst(
-        '    (i32.store (get_local $ptr) (call $getchar)) ;; ,',
+        '    (i32.store8 (get_local $ptr) (call $getchar)) ;; ,',
         depth
       );
     }
@@ -97,6 +91,7 @@ function bfCompile(bfCode) {
   return `${prologue}${genCode(bfCode, 0)}${epilogue}`;
 }
 
+// runtime
 function putchar(ch) {
   process.stdout.write(String.fromCharCode(ch));
 }
@@ -111,11 +106,12 @@ function getchar() {
   return result;
 }
 
+// compile WAST->WASM
 async function wastCompile(wasmTextCode) {
   const wasm = await wast2wasm(wasmTextCode, true);
-  //if (process.env.NODE_ENV === 'debug') {
-  //  console.log(wasm.log);
-  //}
+  if (process.env.NODE_ENV === 'debug') {
+    console.log(wasm.log);
+  }
   const uint8array = wasm.buffer;
   const results = await WebAssembly.instantiate(uint8array, {
     imports: {
@@ -126,6 +122,7 @@ async function wastCompile(wasmTextCode) {
   return results.instance;
 }
 
+// compile wast on string
 function compileAndRunString(bfSource) {
   const bfAst = parser.parse(bfSource);
   const wast = bfCompile(bfAst);
@@ -140,19 +137,57 @@ function compileAndRunString(bfSource) {
         console.log(memory);
       }
     })
-    .catch(e => console.error(e));
+    .catch(e => console.error('Error on running: ', e));
 }
 
+// compile wast on file
 function compileAndRunFile(bfFileName) {
   return util
     .promisify(fs.readFile)(bfFileName, 'utf-8')
     .then(data => {
       compileAndRunString(data);
     })
-    .catch(() => console.error('compile failed'));
+    .catch(e => console.error('Error on compile: ', e));
 }
 
-process.argv.shift();
-for (const target of process.argv) {
-  compileAndRunFile(target);
+function usage(program) {
+  program.help();
+  process.exit(-1);
 }
+
+program
+  .version('0.1.0')
+  .option('-e,--script [string]', 'Brainf*ck script on command line')
+  .arguments('[files...]', 'Brainf*ck file')
+  .action(function(files, opts) {
+    for (const file of files) {
+      compileAndRunFile(file);
+    }
+  })
+  .parse(process.argv);
+
+program.args.length !== 0 || usage(program);
+
+/*
+program
+  .version('0.1.0')
+  .option('-e,--script [string]', 'Brainf*ck script on command line')
+  .arguments('<bfFile> [bfFiles]', 'Brainf*ck file')
+  .parse(process.argv);
+
+if (program.args.length === 0) {
+  program.help();
+  process.exit(0);
+}
+console.log(program);
+if (program.script) {
+  console.log(program.script);
+  for (const target of program.args) {
+    console.log(target);
+    compileAndRunFile(target);
+  }
+}
+if (program.script) {
+  compileAndRunString(target);
+}
+*/
