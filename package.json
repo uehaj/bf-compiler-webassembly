@@ -1,6 +1,6 @@
 {
   "name": "bf-compiler-webassembly",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Brainf*ck compiler for WebAssembly",
   "main": "index.js",
   "scripts": {
@@ -27,5 +27,8 @@
     "pegjs": "^0.10.0",
     "readline-sync": "^1.4.7",
     "wast2wasm": "^0.0.1"
+  },
+  "bin": {
+    "bf-compile-webassembly": "bin/index.js"
   }
 }
