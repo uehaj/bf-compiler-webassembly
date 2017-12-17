@@ -5,7 +5,7 @@
 const program = require('commander');
 const driver = require('../lib/driver');
 
-function main() {
+function main(argv) {
   program
     .version('0.1.0')
     .option('-e,--script [script]', 'run script from command line')
@@ -28,7 +28,7 @@ function main() {
 
 `);
     })
-    .parse(process.argv);
+    .parse(argv);
 
   // for -e,--script option
   if (program.script) {
@@ -39,5 +39,7 @@ function main() {
     program.args.length !== 0 || program.help();
   }
 }
+
+main(process.argv);
 
 exports.main = main;
