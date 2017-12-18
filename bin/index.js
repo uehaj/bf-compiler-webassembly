@@ -20,11 +20,11 @@ function main(argv) {
     })
     .on('--help', function() {
       console.log(`
-      
+
   Examples:
 
     $ npx bf-compiler-webassembly -e "+++"
-    $ npx bf-compiler-webassembly hello.bf"
+    $ npx bf-compiler-webassembly hello.bf
 
 `);
     })
